@@ -28,11 +28,9 @@ class FTDButton: UIButton {
     private func configure() {
         translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = UIColor.init(red: 76/255, green: 158/255, blue: 236/255, alpha: 1)
-        //layer.cornerRadius = 22
         layer.cornerRadius = 30
         titleLabel?.font = UIFont.preferredFont(forTextStyle: .title2)
         titleLabel?.adjustsFontSizeToFitWidth = true
         titleLabel?.textAlignment = .center
     }
-
 }

@@ -10,14 +10,14 @@ import UIKit
 
 class ScanImageVC: UIViewController {
     
-    var imageView = UIImageView()
-    var image = UIImage()
-    var backButton = UIButton()
-    var scanButton = FTDButton(text: "Scan")
+    let imageView = UIImageView()
+    var userImage = UIImage()
+    let backButton = UIButton()
+    let scanButton = FTDButton(text: "Scan")
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(named: "myColors")
+        view.backgroundColor = CustomColors.myColors
         configureScanButton()
         configureImageView()
         configureBackButton()
@@ -33,13 +33,12 @@ class ScanImageVC: UIViewController {
         ])
         scanButton.addTarget(self, action: #selector(showResults), for: .touchUpInside)
     }
-
     
     func configureImageView() {
         view.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
-        imageView.image = image
+        imageView.image = userImage
         imageView.layer.borderWidth = 4
         imageView.layer.borderColor = UIColor.gray.cgColor
         imageView.layer.cornerRadius = 10
@@ -53,12 +52,11 @@ class ScanImageVC: UIViewController {
         ])
     }
     
-    
     func configureBackButton() {
         view.addSubview(backButton)
         backButton.translatesAutoresizingMaskIntoConstraints = false
         let buttonConfig = UIImage.SymbolConfiguration(pointSize: 25)
-        backButton.setImage(UIImage(systemName: "arrow.backward", withConfiguration: buttonConfig), for: .normal)
+        backButton.setImage(UIImage(systemName: Images.backArrow, withConfiguration: buttonConfig), for: .normal)
         
         NSLayoutConstraint.activate([
             backButton.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: 0),
@@ -68,17 +66,15 @@ class ScanImageVC: UIViewController {
         backButton.addTarget(self, action: #selector(dismissView), for: .touchUpInside)
     }
     
-    
     @objc func dismissView() {
         let firstVC = FirstVC()
         firstVC.modalPresentationStyle = .fullScreen
         present(firstVC, animated: true)
     }
     
-    
     @objc func showResults() {
         let resultVC = ResultVC()
-        resultVC.image = self.image
+        resultVC.image = self.userImage
         resultVC.modalPresentationStyle = .fullScreen
         present(resultVC, animated: true)
     }

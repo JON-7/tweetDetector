@@ -1,5 +1,5 @@
 //
-//  OcrText.swift
+//  OcrResult.swift
 //  FTDRefactor
 //
 //  Created by Jon E on 1/13/21.
@@ -8,6 +8,6 @@
 
 import Foundation
 
-struct OcrText: Codable {
-    let parsedResults: [OcrResult]
+struct OCRResult: Codable {
+    var parsedText: String?
 }

@@ -9,14 +9,14 @@
 import UIKit
 
 class InfoAlertVC: UIViewController {
-
+    
     let containerView = UIView()
-    var acTitle = UILabel()
-    var acMessage = UILabel()
+    let acTitle = UILabel()
+    let acMessage = UILabel()
     let acButton = FTDButton()
     let padding: CGFloat = 20
-    let backgroundColor = UIColor(named: "myColors")
-    let textColor = UIColor(named: "textColors")
+    let backgroundColor = CustomColors.myColors
+    let textColor = CustomColors.textColor
     
     var alertTitle: String?
     var message: String?
@@ -80,7 +80,6 @@ class InfoAlertVC: UIViewController {
         acButton.translatesAutoresizingMaskIntoConstraints = false
         acButton.setTitle(buttonTitle, for: .normal)
         acButton.layer.cornerRadius = 25
-        //acButton.addTarget(self, action: #selector(dismissVC), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
             acButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -padding * 2),
@@ -109,6 +108,4 @@ class InfoAlertVC: UIViewController {
     @objc func dismissVC() {
         dismiss(animated: true)
     }
-
-
 }

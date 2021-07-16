@@ -10,33 +10,27 @@ import UIKit
 
 class FirstVC: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     
-    var logo = UIImageView()
-    var takePicButton = FTDButton(text: "Take Photo")
-    var photoLibraryButton = FTDButton(text: "Photo Library")
-    var infoButton = UIButton()
+    let logo = UIImageView()
+    let takePicButton = FTDButton(text: "Take Photo")
+    let photoLibraryButton = FTDButton(text: "Photo Library")
+    let infoButton = UIButton()
     let resultScreen = ResultVC()
     let scanImageScreen = ScanImageVC()
-    let infoText = """
-    - Make sure the tweet text, username, and date are all shown \n
-    - Use good lighting \n
-    - Take pictures as close as possible \n
-
-    """
-
+    let infoText = ScanningTipsMessage.message
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(named: "myColors")
+        view.backgroundColor = CustomColors.myColors
         configureLogo()
         configurePicButton()
         configurePhotoLibraryButton()
         configureInfoButton()
     }
     
-    
     func configureLogo() {
         view.addSubview(logo)
         logo.translatesAutoresizingMaskIntoConstraints = false
-        logo.image = UIImage(named: "detective1")
+        logo.image = Images.detective
         logo.contentMode = .scaleAspectFit
         
         NSLayoutConstraint.activate([
@@ -46,7 +40,6 @@ class FirstVC: UIViewController, UIImagePickerControllerDelegate & UINavigationC
             logo.widthAnchor.constraint(equalToConstant: 260)
         ])
     }
-    
     
     func configurePicButton() {
         view.addSubview(takePicButton)
@@ -59,7 +52,6 @@ class FirstVC: UIViewController, UIImagePickerControllerDelegate & UINavigationC
         takePicButton.addTarget(self, action: #selector(takePicture), for: .touchUpInside)
     }
     
-    
     func configurePhotoLibraryButton() {
         view.addSubview(photoLibraryButton)
         NSLayoutConstraint.activate([
@@ -71,7 +63,6 @@ class FirstVC: UIViewController, UIImagePickerControllerDelegate & UINavigationC
         photoLibraryButton.addTarget(self, action: #selector(getCameraRoll), for: .touchUpInside)
     }
     
-    
     @objc func takePicture(_ sender: FTDButton) {
         let picker = UIImagePickerController()
         picker.sourceType = .camera
@@ -80,20 +71,17 @@ class FirstVC: UIViewController, UIImagePickerControllerDelegate & UINavigationC
         present(picker, animated: true)
     }
     
-    
     @objc func getCameraRoll(_ sender: FTDButton) {
         let picker = UIImagePickerController()
-        //allow the user to edit the size of the image
         picker.allowsEditing = true
         picker.delegate = self
         present(picker, animated: true)
     }
-
     
     func configureInfoButton() {
         view.addSubview(infoButton)
         infoButton.translatesAutoresizingMaskIntoConstraints = false
-        infoButton.setImage(UIImage(systemName: "info.circle", withConfiguration: UIImage.SymbolConfiguration(pointSize: 25, weight: .light, scale: .medium)), for: .normal)
+        infoButton.setImage(Images.infoCircle, for: .normal)
         
         NSLayoutConstraint.activate([
             infoButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
@@ -108,7 +96,6 @@ class FirstVC: UIViewController, UIImagePickerControllerDelegate & UINavigationC
     @objc func displayInfo() {
         presentGFAlertOnMainThread(title: "Scanning Tips", message: infoText, buttonTitle: "Continue")
     }
-
     
     @objc func presentGFAlertOnMainThread(title: String, message: String, buttonTitle: String) {
         DispatchQueue.main.async {
@@ -117,7 +104,6 @@ class FirstVC: UIViewController, UIImagePickerControllerDelegate & UINavigationC
             alertVC.modalTransitionStyle = .crossDissolve
             alertVC.acButton.addTarget(self, action: #selector(self.dismissVC), for: .touchUpInside)
             self.present(alertVC, animated: true)
-
         }
     }
     
@@ -140,7 +126,7 @@ extension FirstVC {
             return
         }
         
-        scanImageScreen.image = image
+        scanImageScreen.userImage = image
         scanImageScreen.modalPresentationStyle = .fullScreen
         present(scanImageScreen, animated: true)
     }

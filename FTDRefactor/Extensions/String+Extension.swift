@@ -1,8 +1,8 @@
 //
-//  Extensions.swift
+//  String+Extension.swift
 //  FTDRefactor
 //
-//  Created by Jon E on 3/9/21.
+//  Created by Jon E on 7/13/21.
 //  Copyright © 2021 Jon E. All rights reserved.
 //
 

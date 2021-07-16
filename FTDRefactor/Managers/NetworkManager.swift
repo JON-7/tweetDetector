@@ -55,7 +55,7 @@ class NetworkManager {
             }
             
             // decoding the text parsed by the ocr
-            guard let result = try? JSONDecoder().decode(OcrText.self, from: data) else { return }
+            guard let result = try? JSONDecoder().decode(OCRText.self, from: data) else { return }
             
             let fullText = result.parsedResults[0].parsedText?.replacingOccurrences(of: "\n", with: " ")
             let fullTextArray = fullText?.components(separatedBy: " ")

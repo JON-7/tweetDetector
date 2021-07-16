@@ -1,8 +1,8 @@
 //
-//  Util.swift
+//  UIViewController+Extension.swift
 //  FTDRefactor
 //
-//  Created by Jon E on 1/17/21.
+//  Created by Jon E on 7/13/21.
 //  Copyright © 2021 Jon E. All rights reserved.
 //
 
@@ -22,7 +22,6 @@ extension UIViewController {
         loadingView?.addSubview(ai)
         self.view.addSubview(loadingView!)
     }
-    
     
     func removeSpinner() {
         loadingView?.removeFromSuperview()
