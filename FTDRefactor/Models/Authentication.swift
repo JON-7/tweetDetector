@@ -87,7 +87,9 @@ func getText(text: String, date: String, usernameIndex: Int) -> String {
         finalText.append(nameFoundArray[n] + " ")
     }
     
-    return finalText
+    let trimmedTweetText = finalText.trimmingCharacters(in: .whitespaces)
+    
+    return trimmedTweetText
 }
 
 func compareDate(twitterTime: String, OCRTime: String) -> Bool{
