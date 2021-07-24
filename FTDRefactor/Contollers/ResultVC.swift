@@ -62,10 +62,12 @@ class ResultVC: UIViewController {
                         return
                     }
                     
-                    let start = getStartEndTime(ocrTime: self?.authentication.ocrFormattedDate ?? "")["startTime"] ?? "0"
-                    let end = getStartEndTime(ocrTime: self?.authentication.ocrFormattedDate ?? "")["endTime"] ?? "0"
+                    let formattedDate = getTweetTime(ocrTime: self?.authentication.ocrFormattedDate ?? "")
+                    let tweetTimeFrame = getStartEndTime(tweetTime: formattedDate)
+                    let startSearchTime = tweetTimeFrame["startTime"] ?? ""
+                    let endSearchTime = tweetTimeFrame["endTime"] ?? ""
                     
-                    NetworkManager.shared.getUserTweets(id: self?.authentication.twitterID ?? "", startTime: start, endTime: end) { [weak self] result in
+                    NetworkManager.shared.getUserTweets(id: self?.authentication.twitterID ?? "", startTime: startSearchTime, endTime: endSearchTime) { [weak self] result in
                         switch result {
                         case .success(let tweets):
                             self?.setFinalResults(for: tweets)
@@ -106,7 +108,8 @@ class ResultVC: UIViewController {
         for n in 0..<tweets.count {
             guard let a = self.authentication.ocrTweetText?.lowercased() else { return }
             let b = tweets[n].text.lowercased()
-            if ((a.contains(b))) {
+
+            if a.cleanString() == b.cleanString(){
                 self.authentication.isBodyReal = true
                 self.authentication.apiTweetText = tweets[n].text
                 self.authentication.tweetDate = tweets[n].created_at
@@ -117,7 +120,7 @@ class ResultVC: UIViewController {
             self.authentication.isDateReal = true
         } else {
             self.authentication.isDateReal = false
-            self.presentErrors(title: "Error", message: "Please retake the picture", buttonTitle: "OK")
+            self.presentErrors(title: "Retake Photo", message: "Please retake the picture", buttonTitle: "OK")
         }
     }
     

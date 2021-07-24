@@ -43,18 +43,12 @@ func getUsernameAndIndex(ocrText: String) -> [String: Any] {
 }
 
 func getDate(text: String) -> String {
-    let datePattern = "[0-9]*[:][0-9]{2}.([AaPP][Mm]).[aA-zZ]{3}.[0-9]*[,].[0-9]{4}"
-    do {
-        let regex = try NSRegularExpression(pattern: datePattern)
-        let result = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
-        let mapped = result.map {
-            String(text[Range($0.range, in: text)!])
-        }
-        let date = mapped.joined()
-        return date
-    } catch {
-        return "DATE NOT FOUND"
+    let datePattern = "[0-9]*[:][0-9]{2}.([AaPP][Mm]).*[aA-zZ]{3}.[0-9]*[,].[0-9]{4}"
+
+    guard let dateFound = text.matches(for: datePattern).first else {
+        return "NO DATE FOUND"
     }
+    return dateFound
 }
 
 func getText(text: String, date: String, usernameIndex: Int) -> String {
@@ -110,78 +104,65 @@ func compareDate(twitterTime: String, OCRTime: String) -> Bool{
     let ocrTimeArray = OCRTime.components(separatedBy: " ")
     let ocrHrMin = ocrTimeArray[0]
     let ocrMin = ocrHrMin.suffix(2)
-     
+    
     return ((twMin == ocrMin) ? true: false)
 }
 
-func getStartEndTime(ocrTime: String) -> [String: String] {
-    if ocrTime == "" {
-        return ["startTime": "", "endTime": ""]
+func getStartEndTime(tweetTime: String) -> [String: String] {
+    
+    let tweetDate = tweetTime
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+    let date = dateFormatter.date(from: tweetDate) ?? Date()
+    
+    let dayBeforeDate = date.addingTimeInterval(-86400)
+    let dayAfterDate = date.addingTimeInterval(86400)
+
+    let dateToStringFormmater = DateFormatter()
+    dateToStringFormmater.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+    let dayBeforeString = dateToStringFormmater.string(from: dayBeforeDate) + ".000Z"
+    let dayAfterString = dateToStringFormmater.string(from: dayAfterDate) + ".000Z"
+    
+    return ["startTime": dayBeforeString, "endTime": dayAfterString]
+}
+
+func getTweetTime(ocrTime: String) -> String {
+    let yearDetected = ocrTime.matches(for: TweetDateRegex.yearRegex).first ?? ""
+    let monthDetected = ocrTime.matches(for: TweetDateRegex.monthRegex).first ?? ""
+    let hrMinsDetected = ocrTime.matches(for: TweetDateRegex.hrMinRegex).first ?? ""
+    let rawDayDetected = ocrTime.matches(for: TweetDateRegex.dayRegex).first ?? ""
+    var dayDetected = rawDayDetected.replacingOccurrences(of: ",", with: "")
+    
+    let tweetHour = getTweetHour(for: hrMinsDetected)
+    let tweetMin = hrMinsDetected.suffix(2)
+    let tweetMonth = formatMonthNameToDigit(month: monthDetected)
+    
+    if dayDetected.count == 1 {
+        dayDetected = "0" + dayDetected
     }
     
-    // Twitter api time parameter format: 0000-00-00T00:00:00.000Z
-    var startTime = ""
-    var endTime = ""
-    let ocrTimeArray = ocrTime.components(separatedBy: " ")
-    // first element contains the hour and the minute
-    let ocrHrMin = ocrTimeArray[0]
-    let ocrMin = ocrHrMin.suffix(2)
-    var ocrHour = ""
-    let tempStrHr = ocrHrMin.dropLast(3)
-    var tempIntHr = Int(tempStrHr) ?? 0
+    let tweetDate = "\(yearDetected)-\(tweetMonth)-\(dayDetected)T\(tweetHour):\(tweetMin):00.000Z"
     
-    if ocrTimeArray[1] == "PM" {
-        tempIntHr += 12
-        ocrHour = String(tempIntHr)
+    return tweetDate
+}
+
+func getTweetHour(for time: String) -> Int {
+    var hour = 0
+    if time.count == 4 {
+        hour = Int(time.prefix(1)) ?? 110
+        hour += 12
     } else {
-        if tempIntHr < 10 {
-            ocrHour = "0" + tempStrHr
-        } else {
-            ocrHour = String(tempIntHr)
-        }
+        hour = Int(time.prefix(2)) ?? 0
     }
+    return hour
+}
 
-    var ocrMonth = ""
-    let monthName = ocrTimeArray[2]
-
-    // convert month to date type
+func formatMonthNameToDigit(month: String) -> String {
     let monthDateFormatter = DateFormatter()
     monthDateFormatter.dateFormat = "MM"
-    let date = monthDateFormatter.date(from: monthName)
+    let date = monthDateFormatter.date(from: month) ?? Date()
     
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "MM"
-    ocrMonth = dateFormatter.string(from: date! as Date)
-    
-    // day
-    var ocrDay1 = ""
-    var ocrDay2 = ""
-    var tempStrDay = ocrTimeArray[3]
-    tempStrDay.removeLast()
-    
-    var tempIntDay1 = Int(tempStrDay) ?? 0
-    tempIntDay1 += 1
-    
-    var tempIntDay2 = Int(tempStrDay) ?? 0
-    tempIntDay2 -= 1
-    
-    // making sure that day has two digits
-    if tempIntDay1 > 9 {
-        ocrDay1 = String(tempIntDay1)
-    } else {
-        ocrDay1 = "0" + String(tempIntDay1)
-    }
-    
-    if tempIntDay2 > 9 {
-        ocrDay2 = String(tempIntDay2)
-    } else {
-        ocrDay2 = "0" + String(tempIntDay2)
-    }
-    
-    let ocrYear = ocrTimeArray[4]
-    
-    startTime = "\(ocrYear)-\(ocrMonth)-\(ocrDay2)T\(ocrHour):\(ocrMin):00.000Z"
-    endTime = "\(ocrYear)-\(ocrMonth)-\(ocrDay1)T\(ocrHour):\(ocrMin):00.000Z"
-    
-    return ["startTime": startTime, "endTime": endTime]
+    return dateFormatter.string(from: date as Date)
 }

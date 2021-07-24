@@ -39,3 +39,10 @@ enum ScanningTipsMessage {
 
     """
 }
+
+enum TweetDateRegex {
+    static let hrMinRegex = "[0-9]*:[0-9]{2}"
+    static let dayRegex = "[0-9]*,"
+    static let monthRegex = "[aA-zZ]{3}"
+    static let yearRegex = "[0-9]{4}"
+}
