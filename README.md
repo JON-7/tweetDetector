@@ -1,6 +1,4 @@
 # Tweet Detector
-
-## About
 - iOS application that allows users to verify the authenticity of a tweet found online
 - Users either take a photo of a tweet or choose one from their camera roll
 
